@@ -98,10 +98,10 @@ contract SupplyChain{
        uint cropPrice;
         address faddr;
         address daddr;
-        bool isBought;      
-         //string fertilizer_name;
-       //string soil_name;
-   } 
+        bool isBought; 
+        bool isBoughtByRetailer;     
+        bool isBoughtByConsumer;    
+ } 
 
    //model a distributor
    struct Distributor{
@@ -123,6 +123,16 @@ contract SupplyChain{
        bool isValue;
    }
    
+   //model a consumer
+   struct Consumer{
+       uint consumerID;
+       string consumerName;
+       uint consumerContact;
+       string consumerAddress;
+       address caddr;
+       bool isValue;
+   }
+
    mapping(address => Landlord) public mlandlord;
    mapping(address => SeedDealer) public mdealer;
    mapping(uint => Landlease) public mlland;
@@ -134,6 +144,7 @@ contract SupplyChain{
    //mapping(uint => Crop) public dcrop;
    mapping(address => Distributor) public mdist;
    mapping(address => Retailer) public mretail;
+   mapping(address => Consumer) public mconsumer;
    
 
    //count of crop
@@ -143,6 +154,7 @@ contract SupplyChain{
    uint[] public fertilizerArr;
    uint[] public cropArr;
    uint[] public distCropArr;
+   uint[] public consumerCropArr;
    uint[] public temp;
    uint public landlordCount;
    uint public dealerCount;
@@ -154,7 +166,11 @@ contract SupplyChain{
    uint public cropCount;
    uint public distCount;
    uint public retailCount;
+   uint public consumerCount;
    uint public distCropCount;
+   uint public retailCropCount;
+   uint public consumerCropCount;
+
 
    //event for landlord
    event landlordCreated(
@@ -264,8 +280,27 @@ contract SupplyChain{
    event retailCreated (
        uint retailID,
        string retailName,
+       uint retailContact,
        string retailAddress
    );
+
+   //event for retail adding crop
+   event retailCrop (
+       uint cropID
+   );
+
+   //event for consumer
+   event consumerCreated(
+       uint consumerID,
+       string consumerName,
+       uint consumerContact,
+       string consumerAddress
+   );
+
+  // event for consumer adding crop
+  event consumerCrop(
+      uint cropID
+  );
 
     //add new Landlord
     function newLandlord(
@@ -297,7 +332,7 @@ contract SupplyChain{
         //uint _humidity,
         //string memory _cropType,
         uint _area,
-        uint _cost
+        uint _cost 
     ) public {
         Landsale storage _newland = msland[_landID];
         _newland.laddr = msg.sender;
@@ -521,6 +556,7 @@ contract SupplyChain{
     function addRetail(
         uint _retailID,
         string memory _retailName,
+        uint _retailContact,
         string memory _retailAddress
     ) public {
         Retailer storage _newretail = mretail[msg.sender];
@@ -528,8 +564,48 @@ contract SupplyChain{
         _newretail.raddr = msg.sender;
         _newretail.retailID = _retailID;
         _newretail.retailName = _retailName;
+        _newretail.retailContact = _retailContact;
         _newretail.retailAddress = _retailAddress;
+        _newretail.isValue = true;
         retailCount++;
-        emit retailCreated(_newretail.retailID, _retailName, _retailAddress);
+        emit retailCreated(_newretail.retailID, _retailName, _retailContact, _retailAddress);
     }
+
+    //purchase crop by retailer
+    function retailAddCrop(
+        uint _cropID
+     ) public { 
+        Crop storage _newcrop = mcrop[_cropID];
+        _newcrop.isBoughtByRetailer = true;
+        emit retailCrop(_newcrop.cropID);
+    }
+
+     //add new consumer
+    function addconsumer(
+        uint _consumerID,
+        string memory _consumerName,
+        uint _consumerContact,
+        string memory _consumerAddress
+    ) public {
+        Consumer storage _newconsumer = mconsumer[msg.sender];
+        require(!mconsumer[msg.sender].isValue);
+        _newconsumer.caddr = msg.sender;
+        _newconsumer.consumerID = _consumerID;
+        _newconsumer.consumerName = _consumerName;
+        _newconsumer.consumerContact = _consumerContact;
+        _newconsumer.consumerAddress = _consumerAddress;
+        _newconsumer.isValue = true;
+        consumerCount++;
+        emit consumerCreated(_newconsumer.consumerID, _consumerName, _consumerContact, _consumerAddress);
+    }
+
+    //purchase crop by consumer
+    function consumerAddCrop(
+        uint _cropID
+     ) public { 
+        Crop storage _newcrop = mcrop[_cropID];
+        _newcrop.isBoughtByConsumer = true;
+        emit consumerCrop(_newcrop.cropID);
+    }
+
 }
