@@ -98,6 +98,8 @@ contract SupplyChain{
        uint cropPrice;
         address faddr;
         address daddr;
+        address raddr;
+        address caddr;
         bool isBought; 
         bool isBoughtByRetailer;     
         bool isBoughtByConsumer;    
@@ -546,6 +548,7 @@ contract SupplyChain{
         uint _cropID
      ) public { 
         Crop storage _newcrop = mcrop[_cropID];
+         _newcrop.daddr = msg.sender;
         _newcrop.isBought = true;
         emit distCrop(_newcrop.cropID);
     }
@@ -576,6 +579,7 @@ contract SupplyChain{
         uint _cropID
      ) public { 
         Crop storage _newcrop = mcrop[_cropID];
+        _newcrop.raddr = msg.sender;
         _newcrop.isBoughtByRetailer = true;
         emit retailCrop(_newcrop.cropID);
     }
@@ -604,6 +608,7 @@ contract SupplyChain{
         uint _cropID
      ) public { 
         Crop storage _newcrop = mcrop[_cropID];
+        _newcrop.caddr = msg.sender;
         _newcrop.isBoughtByConsumer = true;
         emit consumerCrop(_newcrop.cropID);
     }
