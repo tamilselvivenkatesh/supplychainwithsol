@@ -158,6 +158,8 @@ contract SupplyChain{
    uint[] public distCropArr;
    uint[] public consumerCropArr;
    uint[] public temp;
+   address[] public farmerAdd;
+   address[] public distAdd;
    uint public landlordCount;
    uint public dealerCount;
    uint public leaseCount;
@@ -463,6 +465,7 @@ contract SupplyChain{
         _newfarmer.farmerAddress = _farmerAddress;
         _newfarmer.farmerContact = _farmerContact;
         _newfarmer.isValue = true;
+        farmerAdd.push(msg.sender);
         farmerCount++;
         emit farmerCreated(_newfarmer.farmerID, _farmerName, _farmerContact,_farmerAddress);
     }
@@ -539,6 +542,7 @@ contract SupplyChain{
         _newdist.distContact = _distContact;
         _newdist.distAddress = _distAddress;
         _newdist.isValue = true;
+        distAdd.push(msg.sender);
         distCount++;
         emit distCreated(_newdist.distID, _distName, _distContact, _distAddress);
     }
