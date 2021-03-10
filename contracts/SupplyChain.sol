@@ -160,6 +160,7 @@ contract SupplyChain{
    uint[] public temp;
    address[] public farmerAdd;
    address[] public distAdd;
+   address[] public retailAdd;
    uint public landlordCount;
    uint public dealerCount;
    uint public leaseCount;
@@ -574,6 +575,7 @@ contract SupplyChain{
         _newretail.retailContact = _retailContact;
         _newretail.retailAddress = _retailAddress;
         _newretail.isValue = true;
+        retailAdd.push(msg.sender);
         retailCount++;
         emit retailCreated(_newretail.retailID, _retailName, _retailContact, _retailAddress);
     }
