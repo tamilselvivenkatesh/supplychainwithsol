@@ -143,7 +143,7 @@ contract SupplyChain{
    mapping(uint => Seed) public mseed;
    mapping(uint => Fertilizer) public mfertilizer;
    mapping(uint => Crop) public mcrop;
-   //mapping(uint => Crop) public dcrop;
+   mapping(uint => Crop) public conscrop;
    mapping(address => Distributor) public mdist;
    mapping(address => Retailer) public mretail;
    mapping(address => Consumer) public mconsumer;
@@ -161,6 +161,7 @@ contract SupplyChain{
    address[] public farmerAdd;
    address[] public distAdd;
    address[] public retailAdd;
+   address[] public consAdd;
    uint public landlordCount;
    uint public dealerCount;
    uint public leaseCount;
@@ -479,6 +480,8 @@ contract SupplyChain{
         uint _cropPrice
     ) public {
         Crop storage _newcrop = mcrop[_cropID];
+        Crop storage _newconscrop = conscrop[_cropID];
+        
         //Farmer storage _newfarmer = mfarmer[_farmerID];
        
         _newcrop.faddr = msg.sender;
@@ -486,6 +489,13 @@ contract SupplyChain{
         _newcrop.cropName = _cropName;
         _newcrop.quantity = _quantity;
         _newcrop.cropPrice = _cropPrice;
+
+
+        _newconscrop.faddr = msg.sender;
+        _newconscrop.cropID = _cropID;
+        _newconscrop.cropName = _cropName;
+        _newconscrop.quantity = 0;
+        _newconscrop.cropPrice = _cropPrice;
         cropCount++;
         cropArr.push(_cropID);
         emit cropCreated(_newcrop.cropID, _cropName, _quantity, _cropPrice, _newcrop.faddr);
@@ -553,8 +563,11 @@ contract SupplyChain{
         uint _cropID
      ) public { 
         Crop storage _newcrop = mcrop[_cropID];
-         _newcrop.daddr = msg.sender;
+        Crop storage _newconscrop = conscrop[_cropID];
+        _newcrop.daddr = msg.sender;
         _newcrop.isBought = true;
+        _newconscrop.daddr = msg.sender;
+        _newconscrop.isBought = true;
         emit distCrop(_newcrop.cropID);
     }
 
@@ -585,8 +598,14 @@ contract SupplyChain{
         uint _cropID
      ) public { 
         Crop storage _newcrop = mcrop[_cropID];
+        Crop storage _newconscrop = conscrop[_cropID];
+        
         _newcrop.raddr = msg.sender;
         _newcrop.isBoughtByRetailer = true;
+        
+        _newconscrop.raddr = msg.sender;
+        _newconscrop.isBoughtByRetailer = true;
+        
         emit retailCrop(_newcrop.cropID);
     }
 
@@ -605,17 +624,25 @@ contract SupplyChain{
         _newconsumer.consumerContact = _consumerContact;
         _newconsumer.consumerAddress = _consumerAddress;
         _newconsumer.isValue = true;
+        consAdd.push(msg.sender);
         consumerCount++;
         emit consumerCreated(_newconsumer.consumerID, _consumerName, _consumerContact, _consumerAddress);
     }
 
     //purchase crop by consumer
     function consumerAddCrop(
-        uint _cropID
+        uint _cropID,
+        uint quantity
      ) public { 
         Crop storage _newcrop = mcrop[_cropID];
+        Crop storage _newconscrop = conscrop[_cropID];
         _newcrop.caddr = msg.sender;
         _newcrop.isBoughtByConsumer = true;
+        _newcrop.quantity = _newcrop.quantity - quantity;
+
+        _newconscrop.caddr = msg.sender;
+        _newconscrop.isBoughtByConsumer = true;
+        _newconscrop.quantity = _newconscrop.quantity + quantity;
         emit consumerCrop(_newcrop.cropID);
     }
 
