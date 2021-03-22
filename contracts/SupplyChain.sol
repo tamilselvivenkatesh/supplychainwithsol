@@ -157,7 +157,6 @@ contract SupplyChain{
    uint[] public cropArr;
    uint[] public distCropArr;
    uint[] public consumerCropArr;
-   uint[] public temp;
    address[] public farmerAdd;
    address[] public distAdd;
    address[] public retailAdd;
@@ -173,9 +172,7 @@ contract SupplyChain{
    uint public distCount;
    uint public retailCount;
    uint public consumerCount;
-   uint public distCropCount;
-   uint public retailCropCount;
-   uint public consumerCropCount;
+   
 
 
    //event for landlord
@@ -507,6 +504,7 @@ contract SupplyChain{
      ) public { 
         Landlease storage _newland = mlland[_landID];
         _newland.isBought = true;
+        _newland.faddr=msg.sender;
         emit landPurchaseLease(_newland.landID);
     }
   
@@ -516,6 +514,7 @@ contract SupplyChain{
      ) public { 
         Landsale storage _newland = msland[_landID];
         _newland.isBought = true;
+        _newland.faddr=msg.sender;
         emit landPurchaseSale(_newland.landID);
     }
 
@@ -524,6 +523,7 @@ contract SupplyChain{
         uint _seedID
     ) public {
         Seed storage _newseed = mseed[_seedID];
+        _newseed.faddr=msg.sender;
         _newseed.isBought=true;
         emit seedPurchase(_newseed.seedID);
     }
@@ -534,6 +534,7 @@ contract SupplyChain{
     ) public {
         Fertilizer storage _newfertilizer = mfertilizer[_fertilizerID];
         _newfertilizer.isBought=true;
+        _newfertilizer.faddr=msg.sender;
         emit fertilizerPurchase(_newfertilizer.fertilizerID);
     }
 
